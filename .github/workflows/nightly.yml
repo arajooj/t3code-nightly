@@ -78,6 +78,23 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Patch version to nightly
+        working-directory: t3code
+        run: |
+          NIGHTLY_DATE="${{ needs.check-upstream.outputs.upstream_date }}"
+          CURRENT_VERSION=$(node -p "require('./apps/desktop/package.json').version")
+          NIGHTLY_VERSION="${CURRENT_VERSION}-nightly.${NIGHTLY_DATE}"
+          echo "Patching version: ${CURRENT_VERSION} -> ${NIGHTLY_VERSION}"
+          # Patch root and desktop package.json
+          node -e "
+            const fs = require('fs');
+            for (const f of ['./package.json', './apps/desktop/package.json']) {
+              const pkg = JSON.parse(fs.readFileSync(f, 'utf8'));
+              pkg.version = '${NIGHTLY_VERSION}';
+              fs.writeFileSync(f, JSON.stringify(pkg, null, 2) + '\n');
+            }
+          "
+
       - name: Install dependencies
         working-directory: t3code
         run: bun install --frozen-lockfile
@@ -132,6 +149,23 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Patch version to nightly
+        working-directory: t3code
+        shell: bash
+        run: |
+          NIGHTLY_DATE="${{ needs.check-upstream.outputs.upstream_date }}"
+          CURRENT_VERSION=$(node -p "require('./apps/desktop/package.json').version")
+          NIGHTLY_VERSION="${CURRENT_VERSION}-nightly.${NIGHTLY_DATE}"
+          echo "Patching version: ${CURRENT_VERSION} -> ${NIGHTLY_VERSION}"
+          node -e "
+            const fs = require('fs');
+            for (const f of ['./package.json', './apps/desktop/package.json']) {
+              const pkg = JSON.parse(fs.readFileSync(f, 'utf8'));
+              pkg.version = '${NIGHTLY_VERSION}';
+              fs.writeFileSync(f, JSON.stringify(pkg, null, 2) + '\n');
+            }
+          "
+
       - name: Install dependencies
         working-directory: t3code
         run: bun install --frozen-lockfile
@@ -182,6 +216,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
+
+      - name: Patch version to nightly
+        working-directory: t3code
+        run: |
+          NIGHTLY_DATE="${{ needs.check-upstream.outputs.upstream_date }}"
+          CURRENT_VERSION=$(node -p "require('./apps/desktop/package.json').version")
+          NIGHTLY_VERSION="${CURRENT_VERSION}-nightly.${NIGHTLY_DATE}"
+          echo "Patching version: ${CURRENT_VERSION} -> ${NIGHTLY_VERSION}"
+          node -e "
+            const fs = require('fs');
+            for (const f of ['./package.json', './apps/desktop/package.json']) {
+              const pkg = JSON.parse(fs.readFileSync(f, 'utf8'));
+              pkg.version = '${NIGHTLY_VERSION}';
+              fs.writeFileSync(f, JSON.stringify(pkg, null, 2) + '\n');
+            }
+          "
 
       - name: Install dependencies
         working-directory: t3code
