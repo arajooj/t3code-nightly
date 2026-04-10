@@ -181,9 +181,15 @@ jobs:
         working-directory: t3code
         run: bun run build
 
-      - name: Build macOS desktop app
+      - name: Build macOS desktop app (arm64)
         working-directory: t3code
-        run: bun run dist:desktop:mac
+        run: bun run dist:desktop:dmg:arm64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build macOS desktop app (x64)
+        working-directory: t3code
+        run: bun run dist:desktop:dmg:x64
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
