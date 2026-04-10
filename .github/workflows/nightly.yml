@@ -78,22 +78,14 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Patch version to nightly
+      - name: Resolve nightly version
+        id: version
         working-directory: t3code
         run: |
-          NIGHTLY_DATE="${{ needs.check-upstream.outputs.upstream_date }}"
-          CURRENT_VERSION=$(node -p "require('./apps/desktop/package.json').version")
-          NIGHTLY_VERSION="${CURRENT_VERSION}-nightly.${NIGHTLY_DATE}"
-          echo "Patching version: ${CURRENT_VERSION} -> ${NIGHTLY_VERSION}"
-          # Patch root and desktop package.json
-          node -e "
-            const fs = require('fs');
-            for (const f of ['./package.json', './apps/desktop/package.json']) {
-              const pkg = JSON.parse(fs.readFileSync(f, 'utf8'));
-              pkg.version = '${NIGHTLY_VERSION}';
-              fs.writeFileSync(f, JSON.stringify(pkg, null, 2) + '\n');
-            }
-          "
+          CURRENT_VERSION=$(node -p "require('./apps/server/package.json').version")
+          NIGHTLY_VERSION="${CURRENT_VERSION}-nightly.${{ needs.check-upstream.outputs.upstream_date }}"
+          echo "version=${NIGHTLY_VERSION}" >> $GITHUB_OUTPUT
+          echo "Nightly version: ${NIGHTLY_VERSION}"
 
       - name: Install dependencies
         working-directory: t3code
@@ -108,6 +100,7 @@ jobs:
         run: bun run dist:desktop:linux
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          T3CODE_DESKTOP_VERSION: ${{ steps.version.outputs.version }}
 
       - name: List build output
         working-directory: t3code
@@ -149,22 +142,15 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Patch version to nightly
+      - name: Resolve nightly version
+        id: version
         working-directory: t3code
         shell: bash
         run: |
-          NIGHTLY_DATE="${{ needs.check-upstream.outputs.upstream_date }}"
-          CURRENT_VERSION=$(node -p "require('./apps/desktop/package.json').version")
-          NIGHTLY_VERSION="${CURRENT_VERSION}-nightly.${NIGHTLY_DATE}"
-          echo "Patching version: ${CURRENT_VERSION} -> ${NIGHTLY_VERSION}"
-          node -e "
-            const fs = require('fs');
-            for (const f of ['./package.json', './apps/desktop/package.json']) {
-              const pkg = JSON.parse(fs.readFileSync(f, 'utf8'));
-              pkg.version = '${NIGHTLY_VERSION}';
-              fs.writeFileSync(f, JSON.stringify(pkg, null, 2) + '\n');
-            }
-          "
+          CURRENT_VERSION=$(node -p "require('./apps/server/package.json').version")
+          NIGHTLY_VERSION="${CURRENT_VERSION}-nightly.${{ needs.check-upstream.outputs.upstream_date }}"
+          echo "version=${NIGHTLY_VERSION}" >> $GITHUB_OUTPUT
+          echo "Nightly version: ${NIGHTLY_VERSION}"
 
       - name: Install dependencies
         working-directory: t3code
@@ -179,6 +165,7 @@ jobs:
         run: bun run dist:desktop:win
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          T3CODE_DESKTOP_VERSION: ${{ steps.version.outputs.version }}
 
       - name: List build output
         working-directory: t3code
@@ -217,21 +204,14 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Patch version to nightly
+      - name: Resolve nightly version
+        id: version
         working-directory: t3code
         run: |
-          NIGHTLY_DATE="${{ needs.check-upstream.outputs.upstream_date }}"
-          CURRENT_VERSION=$(node -p "require('./apps/desktop/package.json').version")
-          NIGHTLY_VERSION="${CURRENT_VERSION}-nightly.${NIGHTLY_DATE}"
-          echo "Patching version: ${CURRENT_VERSION} -> ${NIGHTLY_VERSION}"
-          node -e "
-            const fs = require('fs');
-            for (const f of ['./package.json', './apps/desktop/package.json']) {
-              const pkg = JSON.parse(fs.readFileSync(f, 'utf8'));
-              pkg.version = '${NIGHTLY_VERSION}';
-              fs.writeFileSync(f, JSON.stringify(pkg, null, 2) + '\n');
-            }
-          "
+          CURRENT_VERSION=$(node -p "require('./apps/server/package.json').version")
+          NIGHTLY_VERSION="${CURRENT_VERSION}-nightly.${{ needs.check-upstream.outputs.upstream_date }}"
+          echo "version=${NIGHTLY_VERSION}" >> $GITHUB_OUTPUT
+          echo "Nightly version: ${NIGHTLY_VERSION}"
 
       - name: Install dependencies
         working-directory: t3code
@@ -246,12 +226,14 @@ jobs:
         run: bun run dist:desktop:dmg:arm64
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          T3CODE_DESKTOP_VERSION: ${{ steps.version.outputs.version }}
 
       - name: Build macOS desktop app (x64)
         working-directory: t3code
         run: bun run dist:desktop:dmg:x64
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          T3CODE_DESKTOP_VERSION: ${{ steps.version.outputs.version }}
 
       - name: List build output
         working-directory: t3code
