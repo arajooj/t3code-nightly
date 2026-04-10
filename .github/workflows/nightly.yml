@@ -92,16 +92,21 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: List build output
+        working-directory: t3code
+        run: ls -la release/ || echo "release/ not found"
+
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-artifacts
           path: |
-            t3code/apps/desktop/dist-electron/*.AppImage
-            t3code/apps/desktop/dist-electron/*.deb
-            t3code/apps/desktop/dist-electron/*.rpm
-            t3code/apps/desktop/dist-electron/*.tar.gz
-            t3code/apps/desktop/dist-electron/*.snap
+            t3code/release/*.AppImage
+            t3code/release/*.deb
+            t3code/release/*.rpm
+            t3code/release/*.tar.gz
+            t3code/release/*.snap
+            t3code/release/*.yml
           if-no-files-found: warn
           retention-days: 1
 
@@ -141,13 +146,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: List build output
+        working-directory: t3code
+        run: dir release\ || echo "release\ not found"
+
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-artifacts
           path: |
-            t3code/apps/desktop/dist-electron/*.exe
-            t3code/apps/desktop/dist-electron/*.msi
+            t3code/release/*.exe
+            t3code/release/*.msi
+            t3code/release/*.yml
           if-no-files-found: warn
           retention-days: 1
 
@@ -193,13 +203,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: List build output
+        working-directory: t3code
+        run: ls -la release/ || echo "release/ not found"
+
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
         with:
           name: macos-artifacts
           path: |
-            t3code/apps/desktop/dist-electron/*.dmg
-            t3code/apps/desktop/dist-electron/*.zip
+            t3code/release/*.dmg
+            t3code/release/*.zip
+            t3code/release/*.yml
           if-no-files-found: warn
           retention-days: 1
 
